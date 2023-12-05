@@ -102,6 +102,40 @@ export class Models extends Construct {
       });
     }
 
+    if (
+      props.config.llms?.sagemaker.includes(
+        SupportedSageMakerModels.WizardCoder_Python_7B
+      )
+    ) {
+      const wizardCoderPython7b = new SageMakerModel(this, "WizardCoderPython7b", {
+        vpc: props.shared.vpc,
+        region: cdk.Aws.REGION,
+        model: {
+          type: DeploymentType.Container,
+          modelId: "WizardLM/WizardCoder-Python-7B-V1.0",
+          container: ContainerImages.HF_PYTORCH_LLM_TGI_INFERENCE_1_1_0,
+          instanceType: "ml.g5.2xlarge",
+          containerStartupHealthCheckTimeoutInSeconds: 300,
+          env: {
+            SM_NUM_GPUS: JSON.stringify(1),
+            MAX_INPUT_LENGTH: JSON.stringify(2048),
+            MAX_TOTAL_TOKENS: JSON.stringify(4096),
+            //HF_MODEL_QUANTIZE: "bitsandbytes",
+          },
+        },
+      });
+
+      models.push({
+        name: wizardCoderPython7b.endpoint.endpointName!,
+        endpoint: wizardCoderPython7b.endpoint,
+        responseStreamingSupported: false,
+        inputModalities: [Modality.Text],
+        outputModalities: [Modality.Text],
+        interface: ModelInterface.LangChain,
+        ragSupported: true,
+      });
+    }
+
     // To get Jumpstart model ARNs do the following
     // 1. Identify the modelId via https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html
     // 2. Run the following code

@@ -5,6 +5,7 @@ export type ModelProvider = "sagemaker" | "bedrock" | "openai";
 export enum SupportedSageMakerModels {
   FalconLite = "FalconLite",
   Llama2_13b_Chat = "Llama2_13b_Chat",
+  WizardCoder_Python_7B = "WizardCoder_Python_7B",
   Mistral7b_Instruct = "Mistral7b_Instruct",
   Idefics_9b = "Idefics_9b (Multimodal)",
   Idefics_80b = "Idefics_80b (Multimodal)",
